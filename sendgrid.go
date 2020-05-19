@@ -15,24 +15,11 @@ type SendGridConfig struct {
 	mu                                             sync.Mutex
 }
 
-// SGC short hand for using the 'SendGridConfig' struct methods and initializes
-// the default values for the following required configurations
-var SGC = SendGridConfig{
-	SendGridAPIKey:   "",
-	SendGridEndPoint: "",
-	SendGridHost:     "",
-}
+// SM short hand for using the 'SendMail' struct methods
+var SM = SendMail{}
 
-// SetSGC initializes the SendGrid SMTP required configurations
-func (s *SendGridConfig) SetSGC(sgc *SendGridConfig) *SendGridConfig {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s = sgc
-	return s
-}
-
-// MailOptions holds standard email options prior to sending an email
-func (s *SendMail) MailOptions(sm *SendMail) []byte {
+// Options holds standard email options prior to sending an email
+func (s *SendMail) Options(sm *SendMail) []byte {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s = sm
@@ -44,11 +31,11 @@ func (s *SendMail) MailOptions(sm *SendMail) []byte {
 	m := mail.NewV3MailInit(from, s.Subject, to, content)
 
 	// Optional configs
-	if len(strings.TrimSpace(s.CC.Address)) == 0 {
+	if len(strings.TrimSpace(s.CC.Address)) > 0 {
 		cc := mail.NewEmail(s.CC.Name, s.CC.Address)
 		m.Personalizations[0].AddCCs(cc)
 	}
-	if len(strings.TrimSpace(s.BCC.Address)) == 0 {
+	if len(strings.TrimSpace(s.BCC.Address)) > 0 {
 		bcc := mail.NewEmail(s.BCC.Name, s.BCC.Address)
 		m.Personalizations[0].AddBCCs(bcc)
 	}
@@ -56,7 +43,7 @@ func (s *SendMail) MailOptions(sm *SendMail) []byte {
 }
 
 // Send will send the new email
-func (s *SendMail) Send(sgc *SendGridConfig) (bool, error) {
+func (s *SendMail) Send(byteMailOpt []byte, sgc *SendGridConfig) (bool, error) {
 	// Check the required SendGrid API information
 	if len(strings.TrimSpace(sgc.SendGridAPIKey)) == 0 {
 		return false, errors.New("sendgrid api key is required")
@@ -70,7 +57,7 @@ func (s *SendMail) Send(sgc *SendGridConfig) (bool, error) {
 
 	request := sendgrid.GetRequest(sgc.SendGridAPIKey, sgc.SendGridEndPoint, sgc.SendGridHost)
 	request.Method = "POST"
-	var Body = s.MailOptions(s)
+	var Body = byteMailOpt
 	request.Body = Body
 
 	_, err := sendgrid.API(request)
