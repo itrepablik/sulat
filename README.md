@@ -86,6 +86,18 @@ var bodyHTML = `<div style="padding: 40px; background: #fff;">
 </table>
 </div>`
 
+// SGC initialize this variable globally sulat.SendGridConfig{}
+var SGC = sulat.SGC{}
+
+func init() {
+	// Start sending the email.
+	SGC = sulat.SGC{
+		SendGridAPIKey:   "YOUR_SEND_GRID_API_KEY_HERE",
+		SendGridEndPoint: "/v3/mail/send",
+		SendGridHost:     "https://api.sendgrid.com",
+	}
+}
+
 func main() {
 	// Create timaan token for email confirmation
 	rt := timaan.RandomToken()
@@ -105,13 +117,6 @@ func main() {
 	confirmURL := "https://itrepablik.com/confirm/" + newToken
 	fmt.Println(confirmURL)
 
-	// Start sending the email.
-	sgc := sulat.SendGridConfig{
-		SendGridAPIKey:   "YOUR_SEND_GRID_API_KEY",
-		SendGridEndPoint: "/v3/mail/send",
-		SendGridHost:     "https://api.sendgrid.com",
-	}
-
 	// Prepare the HTML email content
 	emailContent, err := sulat.NewEmailContent(HTMLHeader, bodyHTML, HTMLFooter)
 	if err != nil {
@@ -125,7 +130,7 @@ func main() {
 		HTMLBody: emailContent,
 	})
 
-	isSend, err := sulat.SM.Send(mailOpt, &sgc)
+	isSend, err := sulat.SM.Send(mailOpt, &SGC)
 	if err != nil {
 		itrlog.Fatal(err)
 	}
