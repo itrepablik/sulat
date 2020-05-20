@@ -9,8 +9,8 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
-// SendGridConfig collects required settings for SendGrid SMTP server
-type SendGridConfig struct {
+// SGC collects required configurations for SendGrid SMTP server
+type SGC struct {
 	SendGridAPIKey, SendGridEndPoint, SendGridHost string
 	mu                                             sync.Mutex
 }
@@ -43,7 +43,7 @@ func (s *SendMail) Options(sm *SendMail) []byte {
 }
 
 // Send will send the new email
-func (s *SendMail) Send(byteMailOpt []byte, sgc *SendGridConfig) (bool, error) {
+func (s *SendMail) Send(byteMailOpt []byte, sgc *SGC) (bool, error) {
 	// Check the required SendGrid API information
 	if len(strings.TrimSpace(sgc.SendGridAPIKey)) == 0 {
 		return false, errors.New("sendgrid api key is required")
