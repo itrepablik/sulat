@@ -14,11 +14,9 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/itrepablik/itrlog"
 	"github.com/itrepablik/sulat"
-	"github.com/itrepablik/timaan"
 )
 
 // HTMLHeader is the HTML skeletal framework head section of the standard HTML structure that serves as an email content
@@ -99,24 +97,6 @@ func init() {
 }
 
 func main() {
-	// Create timaan token for email confirmation
-	rt := timaan.RandomToken()
-	emailConfirmPayload := timaan.TP{
-		"USERNAME": "politz",
-		"EMAIL":    "politz@live.com",
-	}
-	tok := timaan.TK{
-		TokenKey: rt,
-		Payload:  emailConfirmPayload,
-		ExpireOn: time.Now().Add(time.Minute * 30).Unix(),
-	}
-	newToken, err := timaan.GenerateToken(rt, tok)
-	if err != nil {
-		itrlog.Fatal(err)
-	}
-	confirmURL := "https://itrepablik.com/confirm/" + newToken
-	fmt.Println(confirmURL)
-
 	// Prepare the HTML email content
 	emailContent, err := sulat.NewEmailContent(HTMLHeader, bodyHTML, HTMLFooter)
 	if err != nil {
