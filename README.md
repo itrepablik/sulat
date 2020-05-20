@@ -61,7 +61,7 @@ var bodyHTML = `<div style="padding: 40px; background: #fff;">
 	<tbody>
 		<tr>
 			<td style="border-bottom:1px solid #f6f6f6;">
-				<h1 style="font-size:14px; font-family:arial; margin:0px; font-weight:bold;">Hi UserName,</h1>
+				<h1 style="font-size:14px; font-family:arial; margin:0px; font-weight:bold;">Hi politz,</h1>
 			</td>
 		</tr>
 		<tr>
@@ -76,7 +76,7 @@ var bodyHTML = `<div style="padding: 40px; background: #fff;">
 		<tr>
 			<td style="border-top:1px solid #f6f6f6; padding-top:20px; color:#777">
 				If the button above does not work, try copying and pasting the URL into your browser.<br/>
-				<a href="#">https://itrepablik.com/activate/1234567890</a><br/>
+				<a href="#">https://itrepablik.com/activate/abcde12345</a><br/>
 				If you continue to have problems, please feel free to contact us at <a href="mailto:support@itrepablik.com">support@itrepablik.com</a>
 			</td>
 		</tr>
@@ -90,7 +90,7 @@ var SGC = sulat.SGC{}
 func init() {
 	// Start sending the email.
 	SGC = sulat.SGC{
-		SendGridAPIKey:   "YOUR_SEND_GRID_API_KEY_HERE",
+		SendGridAPIKey:   "YOUR_SENDGRID_API_KEY",
 		SendGridEndPoint: "/v3/mail/send",
 		SendGridHost:     "https://api.sendgrid.com",
 	}
@@ -98,19 +98,13 @@ func init() {
 
 func main() {
 	// Prepare the HTML email content
-	emailContent, err := sulat.NewEmailContent(HTMLHeader, bodyHTML, HTMLFooter)
-	if err != nil {
-		itrlog.Fatal(err)
+	mailOpt := &sulat.SendMail{
+		Subject: "Inquiry for the new ITR Sulat package",
+		From:    sulat.NewEmail("ITR Support", "support@itrepablik.com"),
+		To:      sulat.NewEmail("Politz", "politz@live.com"),
 	}
-
-	mailOpt := sulat.SM.Options(&sulat.SendMail{
-		Subject:  "Inquiry for the new ITR Sulat package",
-		From:     sulat.NewEmail("ITR Support", "support@itrepablik.com"),
-		To:       sulat.NewEmail("Politz", "politz@live.com"),
-		HTMLBody: emailContent,
-	})
-
-	isSend, err := sulat.SM.Send(mailOpt, &SGC)
+	htmlContent := sulat.SetEHF("", bodyHTML, "")
+	isSend, err := sulat.SendEmailSG(mailOpt, htmlContent, &SGC)
 	if err != nil {
 		itrlog.Fatal(err)
 	}
