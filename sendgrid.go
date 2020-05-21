@@ -26,7 +26,7 @@ func (s *SendMail) optionsSG(sm *SendMail) []byte {
 	// Set the required options prior to sending an email
 	from := mail.NewEmail(s.From.Name, s.From.Address)
 	to := mail.NewEmail(s.To.Name, s.To.Address)
-	content := mail.NewContent("text/html", s.HTMLBody)
+	content := mail.NewContent("text/html", s.HTMLBody) // Use only the HTML format
 	m := mail.NewV3MailInit(from, s.Subject, to, content)
 
 	// Optional configs
@@ -42,7 +42,6 @@ func (s *SendMail) optionsSG(sm *SendMail) []byte {
 }
 
 func (s *SendMail) sendSG(byteMailOpt []byte, sgc *SGC) (bool, error) {
-	// Check the required SendGrid API information
 	if len(strings.TrimSpace(sgc.SendGridAPIKey)) == 0 {
 		return false, errors.New("sendgrid api key is required")
 	}
@@ -69,10 +68,18 @@ func (s *SendMail) sendSG(byteMailOpt []byte, sgc *SGC) (bool, error) {
 func SendEmailSG(s *SendMail, emf *EmailHTMLFormat, sgCon *SGC) (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	emailContent, err := NewEmailContent(emf.HTMLHeader, emf.HTMLBody, emf.HTMLFooter)
+
+	var err error
+	emailContent := ""
+	if emf.IsFullHTML {
+		emailContent, err = NewFullHTMLContent(emf.FullHTMLTemplate)
+	} else {
+		emailContent, err = NewEmailContent(emf.HTMLHeader, emf.HTMLBody, emf.HTMLFooter)
+	}
 	if err != nil {
 		return false, err
 	}
+
 	mailOpt := SM.optionsSG(&SendMail{
 		Subject:  s.Subject,
 		From:     s.From,
@@ -82,6 +89,7 @@ func SendEmailSG(s *SendMail, emf *EmailHTMLFormat, sgCon *SGC) (bool, error) {
 		HTMLBody: emailContent,
 	})
 	isSend, err := SM.sendSG(mailOpt, sgCon)
+
 	if err != nil {
 		return false, err
 	}
