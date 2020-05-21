@@ -84,6 +84,69 @@ var bodyHTML = `<div style="padding: 40px; background: #fff;">
 </table>
 </div>`
 
+// FullHTML use this when you preferred the full HTML template as your content
+var FullHTML = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="icon" type="image/ico" sizes="16x16" href="https://itrepablik.com/static/assets/images/favicon.ico">
+    <title>Email Notifications</title>
+</head>
+<body style="margin:0px; background: #f8f8f8; ">
+    <div width="100%" style="background: #f8f8f8; padding: 0px 0px; font-family:arial; line-height:28px; height:100%;  width: 100%; color: #514d6a;">
+        <div style="max-width: 700px; padding:50px 0;  margin: 0px auto; font-size: 14px">
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin-bottom: 20px">
+                <tbody>
+                    <tr>
+                        <td style="vertical-align: top; padding-bottom:30px;" align="center">
+                            <a href="https://itrepablik.com" target="_blank">
+                                <img src="https://itrepablik.com/static/assets/images/ITRepablik_top_logo.png" style="width:230px; height:auto;" alt="xtreme admin" style="border:none">
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="padding: 40px; background: #fff;">
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="border-bottom:1px solid #f6f6f6;">
+                                <h1 style="font-size:14px; font-family:arial; margin:0px; font-weight:bold;">Hi UserName,</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px 0 30px 0;">
+                                <p>A request to reset your password has been made. If you did not make this request, simply ignore this email. If you did make this request, please reset your password:</p>
+                                <center>
+                                <a href="#" style="display: inline-block; padding: 11px 30px; margin: 20px 0px 30px; font-size: 15px; color: #fff; background: #4fc3f7; border-radius: 60px; text-decoration:none;">Reset Password</a>
+                                </center>
+                                <b>- Thanks (ITRepablik.com Team)</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-top:1px solid #f6f6f6; padding-top:20px; color:#777">
+                                If the button above does not work, try copying and pasting the URL into your browser.<br/>
+                                <a href="#">https://itrepablik.com/activate/hello-world</a><br/>
+                                If you continue to have problems, please feel free to contact us at <a href="mailto:support@itrepablik.com">support@itrepablik.com</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="text-align: center; font-size: 12px; color: #b2b2b5; margin-top: 20px">
+                <p> Powered by ITRepablik.com
+                    <br>
+                    <a href="javascript: void(0);" style="color: #b2b2b5; text-decoration: underline;">Unsubscribe</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`
+
 // SGC initialize this variable globally sulat.SendGridConfig{}
 var SGC = sulat.SGC{}
 
@@ -103,7 +166,28 @@ func main() {
 		From:    sulat.NewEmail("ITR Support", "support@itrepablik.com"),
 		To:      sulat.NewEmail("Politz", "politz@live.com"),
 	}
-	htmlContent := sulat.SetEHF("", bodyHTML, "")
+
+	//*****************************************************************************
+	// Use only either 'Method 1' or 'Method 2' for your email HTML content
+	//*****************************************************************************
+
+	// Method 1: Set full HTML template as your email content.
+	// e.g email marketing campaign template
+	htmlContent, err := sulat.SetHTML(&sulat.EmailHTMLFormat{
+		IsFullHTML:       true,
+		FullHTMLTemplate: FullHTML,
+	})
+
+	// Method 2: Set this standard HTML header and footer but with different HTML body
+	// this is usually use when you've fixed header and footer content
+	// e.g standard email notifications such as password reset, email confirmation, etc.
+	htmlContent, err = sulat.SetHTML(&sulat.EmailHTMLFormat{
+		IsFullHTML: false,
+		HTMLHeader: HTMLHeader,
+		HTMLBody:   bodyHTML,
+		HTMLFooter: HTMLFooter,
+	})
+
 	isSend, err := sulat.SendEmailSG(mailOpt, htmlContent, &SGC)
 	if err != nil {
 		itrlog.Fatal(err)
