@@ -1,14 +1,14 @@
 
 ![sulat](https://user-images.githubusercontent.com/58651329/82276988-5dcdf680-99b9-11ea-8ba4-f0264d7cbf72.png)
-The **sulat** package is an easier way of sending an automatic email notification from your Go's project, currently supported the SendGrid SMTP API, in the future we can add more to cater to your needs.
+The **sulat** package is an easier way of sending an automatic email notification from your Go's project, currently supported the SendGrid SMTP API and the Gomail classic SMTP server, in the future we can add more to cater to your needs.
 
 # Installation
 ```
 go get -u github.com/itrepablik/sulat
 ```
 
-# Usage
-This is the sample usage for the sulat package.
+# Usage using SendGrid
+This is the sample used for the sulat package to send email notification from your Go's application using the SendGrid API key.
 ```
 package main
 
@@ -195,5 +195,72 @@ func main() {
 	fmt.Println("isSend: ", isSend)
 }
 ```
+
+# Usage using Gomail
+This is how you can use the classic SMTP server to send email notifications from your Go's application.
+```
+package main
+
+import (
+	"fmt"
+
+	"github.com/itrepablik/itrlog"
+	"github.com/itrepablik/sulat"
+)
+
+// SMTPCon initialize this variable globally sulat.SMTPConfig{} for the 'SMTP' Classic
+var SMTPCon = sulat.SMTPConfig{}
+
+func init() {
+	// Initialize the 'SMTP' classic
+	SMTPCon = sulat.SMTPConfig{
+		Host:     "smtp.host.com",
+		Port:     25,
+		UserName: "your@email.com",
+		Password: "your_smtp_password",
+	}
+}
+
+func main() {
+	// This is how to use the 'sulat' package using 'SendGrid' API key
+	// Prepare the HTML email content
+	mailOpt := &sulat.MailClassicHeader{
+		Subject: "Inquiry for the new ITR Sulat package",
+		From:    "support@itrepablik.com",
+		To:      []string{"email1@mail.com", "email2@mail.com"},
+		CC:      []string{"email3@mail.com", "email4@mail.com"},
+		BCC:     []string{"email5@mail.com", "email6@mail.com"},
+	}
+
+	//*****************************************************************************
+	// Use only either 'Method 1' or 'Method 2' for your email HTML content
+	//*****************************************************************************
+
+	// Method 1: Set full HTML template as your email content.
+	// e.g email marketing campaign template
+	htmlContent, err := sulat.SetHTML(&sulat.EmailHTMLFormat{
+		IsFullHTML:       true,
+		FullHTMLTemplate: FullHTML,
+	})
+
+	// Method 2: Set this standard HTML header and footer but with different HTML body
+	// this is usually use when you've fixed header and footer content
+	// e.g standard email notifications such as password reset, email confirmation, etc.
+	htmlContent, err = sulat.SetHTML(&sulat.EmailHTMLFormat{
+		IsFullHTML: false,
+		HTMLHeader: HTMLHeader,
+		HTMLBody:   bodyHTML,
+		HTMLFooter: HTMLFooter,
+	})
+
+	// Send email using 'SMTP' classic method
+	isSend, err := sulat.SendEmailSMTP(mailOpt, htmlContent, &SMTPCon)
+	if err != nil {
+		itrlog.Fatal(err)
+	}
+	fmt.Println("isSend: ", isSend)
+}
+```
+
 # License
 Code is distributed under MIT license, feel free to use it in your proprietary projects as well.
