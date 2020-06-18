@@ -3,7 +3,6 @@ package sulat
 import (
 	"errors"
 	"strings"
-	"sync"
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -12,11 +11,7 @@ import (
 // SGC collects required configurations for SendGrid SMTP server
 type SGC struct {
 	SendGridAPIKey, SendGridEndPoint, SendGridHost string
-	mu                                             sync.Mutex
 }
-
-// SM short hand for using the 'SendMail' struct methods
-var SM = SendMail{}
 
 func (s *SendMail) optionsSG(sm *SendMail) []byte {
 	s.mu.Lock()
