@@ -7,7 +7,7 @@ The **sulat** package is an easier way of sending an automatic email notificatio
 go get -u github.com/itrepablik/sulat
 ```
 
-# Usage using SendGrid
+# SendGrid Usage
 This is the sample used for the sulat package to send email notification from your Go's application using the SendGrid API key.
 ```
 package main
@@ -196,7 +196,7 @@ func main() {
 }
 ```
 
-# Usage using Gomail
+# Gomail Usage
 This is how you can use the classic SMTP server to send email notifications from your Go's application.
 ```
 package main
