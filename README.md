@@ -222,7 +222,7 @@ func init() {
 }
 
 func main() {
-	// This is how to use the 'sulat' package using 'SendGrid' API key
+	// This is how to use the 'sulat' package using 'Gomail' classic SMTP server
 	// Prepare the HTML email content
 	mailOpt := &sulat.MailClassicHeader{
 		Subject: "Inquiry for the new ITR Sulat package",
