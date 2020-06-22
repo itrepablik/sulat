@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/itrepablik/gomail"
+	"github.com/itrepablik/sakto"
 )
 
 // SMTPConfig is the collection of classic SMTP required information
@@ -34,10 +35,18 @@ func SendEmailSMTP(s *MailClassicHeader, emf *EmailHTMLFormat, sc *SMTPConfig) (
 
 	// Append the following extra email addresses if existed
 	if len(s.CC) > 0 {
-		m.SetHeader("Cc", s.CC...)
+		for _, e := range s.CC {
+			if sakto.IsEmailValid(strings.TrimSpace(e)) {
+				m.SetHeader("Cc", s.CC...)
+			}
+		}
 	}
 	if len(s.BCC) > 0 {
-		m.SetHeader("Bcc", s.BCC...)
+		for _, e := range s.BCC {
+			if sakto.IsEmailValid(strings.TrimSpace(e)) {
+				m.SetHeader("Bcc", s.BCC...)
+			}
+		}
 	}
 	m.SetHeader("Subject", s.Subject)
 
