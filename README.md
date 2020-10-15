@@ -262,5 +262,9 @@ func main() {
 }
 ```
 
+# Subscribe to Maharlikans Code Youtube Channel:
+Please consider subscribing to my Youtube Channel to recognize my work on this package. Thank you for your support!
+https://www.youtube.com/channel/UCdAVUmldU9Jn2VntuQChHqQ/
+
 # License
 Code is distributed under MIT license, feel free to use it in your proprietary projects as well.
