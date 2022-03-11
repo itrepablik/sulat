@@ -198,7 +198,7 @@ func main() {
 
 # Gomail Usage
 This is how you can use the classic SMTP server to send email notifications from your Go's application.
-```
+```go
 package main
 
 import (
